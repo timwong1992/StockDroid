@@ -12,13 +12,17 @@ import android.widget.Toast;
 import java.util.Calendar;
 
 /**
+ * THe main fragment to view stock information.
+ *
  * Created by tim on 5/13/14.
  */
 public class StockFragment extends Fragment {
 
+    // GUI elements
     private EditText searchEditText;
     private Button searchButton;
 
+    // OnClickListener to detect when query is launched. On default, gathers one week's worth of data.
     private View.OnClickListener searchOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -28,18 +32,23 @@ public class StockFragment extends Fragment {
 
             final String symbol = searchEditText.getText().toString();
             if (symbol.equals("") || symbol == null) {
-                Toast toast = Toast.makeText(getActivity().getApplicationContext(), getString(R.string.noSymbolError), 3000);
-                toast.show();
+                Toast.makeText(getActivity().getApplicationContext(), getString(R.string.noSymbolError), 3000).show();
                 return;
             }
-
-            final String uri = String.format(getString(R.string.dataURI) + "s=%s&a=%d&b=%s&c=%s&d=%d&e=%s&f=%s",
+            // Format: Symbol & Last Trade (real time) & Change (real time) & Open & Volume & 52 Week Low & 52 Week High
+            final String stockURI = String.format(getString(R.string.stockURI) + "s=%s&f=l1c6ovjkn",
+                    symbol);
+            // Format: Symbol & Start Month & Start Day & Start Year & End Month & End Day & End Year
+            // Months are from 0-11, 0 being January
+            final String chartURI = String.format(getString(R.string.chartURI) + "s=%s&a=%d&b=%s&c=%s&d=%d&e=%s&f=%s&n",
                     symbol, cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.YEAR), cal2.get(Calendar.MONTH), cal2.get(Calendar.DAY_OF_MONTH), cal2.get(Calendar.YEAR));
-            System.out.println(uri);
-            new QueryTask(getActivity(), uri).execute();
+            new QueryTask(StockFragment.this, symbol, stockURI, chartURI, new MainStockListener()).execute();
         }
     };
 
+    /**
+     * Constructor
+     */
     public StockFragment() {
         super();
     }
@@ -56,6 +65,13 @@ public class StockFragment extends Fragment {
     }
 
 
+    private class MainStockListener implements StockListener {
+        @Override
+        public void onStockLoaded(String symbol, String stockData, String chartData) {
+            System.out.println(stockData);
+            System.out.println(chartData);
+        }
+    }
 
 
 }

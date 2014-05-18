@@ -4,7 +4,8 @@
     <string name="app_name">StockDroid</string>
     <string name="action_about">About</string>
     <string name="defaultText">Enter ticker here…</string>
-    <string name="dataURI">http://ichart.finance.yahoo.com/table.csv?</string>
+    <string name="stockURI">http://finance.yahoo.com/d/quotes.csv?</string>
+    <string name="chartURI">http://ichart.finance.yahoo.com/table.csv?</string>
     <string name="noSymbolError">"You must enter a symbol."</string>
     <string name="symbolNotFoundError">The symbol could not be found.</string>
     <string name="headerTag"><![CDATA[<head>]]></string>
