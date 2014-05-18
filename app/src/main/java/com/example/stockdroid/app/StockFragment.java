@@ -35,8 +35,8 @@ public class StockFragment extends Fragment {
                 Toast.makeText(getActivity().getApplicationContext(), getString(R.string.noSymbolError), 3000).show();
                 return;
             }
-            // Format: Symbol & Last Trade (real time) & Change (real time) & Open & Volume & 52 Week Low & 52 Week High
-            final String stockURI = String.format(getString(R.string.stockURI) + "s=%s&f=l1c6ovjkn",
+            // Format: Symbol & Last Trade & Change & Open & Volume & 52 Week Low & 52 Week High (15 min delay)
+            final String stockURI = String.format(getString(R.string.stockURI) + "s=%s&f=l1c1ovjkn",
                     symbol);
             // Format: Symbol & Start Month & Start Day & Start Year & End Month & End Day & End Year
             // Months are from 0-11, 0 being January
@@ -68,6 +68,8 @@ public class StockFragment extends Fragment {
     private class MainStockListener implements StockListener {
         @Override
         public void onStockLoaded(String symbol, String stockData, String chartData) {
+            searchEditText.animate();
+            searchButton.animate();
             System.out.println(stockData);
             System.out.println(chartData);
         }
