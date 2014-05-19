@@ -1,10 +1,17 @@
 package com.example.stockdroid.app;
 
 import android.app.Fragment;
+import android.content.Context;
+import android.graphics.Point;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.animation.AnimationSet;
+import android.view.animation.TranslateAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -46,6 +53,20 @@ public class StockFragment extends Fragment {
         }
     };
 
+    // detect if search edit text is focused on, and display or remove virtual keyboard as required
+    private View.OnFocusChangeListener searchOnFocusListener = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            System.out.println("Focus changed: " + hasFocus);
+            final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (hasFocus) {
+                imm.showSoftInput(searchEditText, InputMethodManager.SHOW_IMPLICIT);
+            } else {
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            }
+        }
+    };
+
     /**
      * Constructor
      */
@@ -59,21 +80,37 @@ public class StockFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_stock, container, false);
         searchEditText = (EditText) rootView.findViewById(R.id.searchEditText);
         searchEditText.setHint(getString(R.string.defaultText));
+        searchEditText.setOnFocusChangeListener(searchOnFocusListener);
         searchButton = (Button) rootView.findViewById(R.id.searchButton);
         searchButton.setOnClickListener(searchOnClickListener);
         return rootView;
     }
 
+    /**
+     * Animates the search bar to the top upon successfully loading stock data.
+     */
+    private void moveSearchBar() {
+        Display d = ((WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        Point p = new Point();
+        d.getSize(p);
+
+        // weird animation maths
+        TranslateAnimation move = new TranslateAnimation(0, 0,
+                0, -p.y/2 + getResources().getDimensionPixelSize(getResources().getIdentifier("status_bar_height", "dimen", "android"))*2.5f);
+        move.setDuration(500);
+        move.setFillAfter(true);
+
+        searchEditText.startAnimation(move);
+        searchButton.startAnimation(move);
+    }
 
     private class MainStockListener implements StockListener {
         @Override
         public void onStockLoaded(String symbol, String stockData, String chartData) {
-            searchEditText.animate();
-            searchButton.animate();
+            moveSearchBar();
             System.out.println(stockData);
             System.out.println(chartData);
         }
     }
-
 
 }
