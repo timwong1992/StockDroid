@@ -1,7 +1,9 @@
 package com.example.stockdroid.app;
 
+import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
@@ -9,11 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.util.Calendar;
@@ -26,8 +30,10 @@ import java.util.Calendar;
 public class StockFragment extends Fragment {
 
     // GUI elements
+    private RelativeLayout layout;
     private EditText searchEditText;
     private Button searchButton;
+    private boolean hasSearched;
 
     // OnClickListener to detect when query is launched. On default, gathers one week's worth of data.
     private View.OnClickListener searchOnClickListener = new View.OnClickListener() {
@@ -67,6 +73,24 @@ public class StockFragment extends Fragment {
         }
     };
 
+    private Animation.AnimationListener animationListener = new Animation.AnimationListener() {
+        @Override
+        public void onAnimationStart(Animation animation) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            RelativeLayout.LayoutParams params = layoutParamsFactory();
+
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+
+        }
+    };
+
     /**
      * Constructor
      */
@@ -74,15 +98,35 @@ public class StockFragment extends Fragment {
         super();
     }
 
+    private RelativeLayout.LayoutParams layoutParamsFactory() {
+        return new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_stock, container, false);
-        searchEditText = (EditText) rootView.findViewById(R.id.searchEditText);
+        layout = (RelativeLayout) rootView.findViewById(R.id.mainLayout);
+
+        searchEditText = new EditText(getActivity().getApplicationContext());
         searchEditText.setHint(getString(R.string.defaultText));
         searchEditText.setOnFocusChangeListener(searchOnFocusListener);
-        searchButton = (Button) rootView.findViewById(R.id.searchButton);
+        searchEditText.setTextColor(Color.BLACK);
+
+        searchButton = new Button(getActivity().getApplicationContext());
+        searchButton.setText(getActivity().getString(R.string.go));
         searchButton.setOnClickListener(searchOnClickListener);
+
+        hasSearched = false;
+
+        RelativeLayout.LayoutParams searchEditTextParams = layoutParamsFactory();
+        searchEditTextParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        searchEditTextParams.addRule(RelativeLayout.CENTER_VERTICAL);
+        RelativeLayout.LayoutParams searchButtonParams = layoutParamsFactory();
+        searchButtonParams.addRule(RelativeLayout.RIGHT_OF, R.id.searchEditText);
+
+        layout.addView(searchEditText, searchEditTextParams);
+        layout.addView(searchButton, searchButtonParams);
         return rootView;
     }
 
@@ -90,24 +134,25 @@ public class StockFragment extends Fragment {
      * Animates the search bar to the top upon successfully loading stock data.
      */
     private void moveSearchBar() {
+        // Get the display dimensions and store in Point object
         Display d = ((WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         Point p = new Point();
         d.getSize(p);
 
-        // weird animation maths
-        TranslateAnimation move = new TranslateAnimation(0, 0,
-                0, -p.y/2 + getResources().getDimensionPixelSize(getResources().getIdentifier("status_bar_height", "dimen", "android"))*2.5f);
-        move.setDuration(500);
-        move.setFillAfter(true);
+        int optionBarHeight = getResources().getDimensionPixelSize(getResources().getIdentifier("status_bar_height", "dimen", "android"));
+        int[] position = new int[2]; // array to hold x y coordinates
+        searchEditText.getLocationOnScreen(position);
 
-        searchEditText.startAnimation(move);
-        searchButton.startAnimation(move);
+        searchEditText.animate().x(position[0]).y(optionBarHeight).setDuration(500);
     }
 
     private class MainStockListener implements StockListener {
         @Override
         public void onStockLoaded(String symbol, String stockData, String chartData) {
-            moveSearchBar();
+            if (!hasSearched) {
+                moveSearchBar();
+                hasSearched = true;
+            }
             System.out.println(stockData);
             System.out.println(chartData);
         }
