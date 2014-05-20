@@ -78,7 +78,7 @@ public class StockData {
     }
 
     public String getDate() {
-        return calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH) + "-" + calendar.get(Calendar.DAY_OF_MONTH);
+        return calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH)+1 + "-" + calendar.get(Calendar.DAY_OF_MONTH);
     }
 
     public double getPrice() {
