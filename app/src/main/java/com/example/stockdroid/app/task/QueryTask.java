@@ -138,6 +138,9 @@ public class QueryTask extends AsyncTask<String, Object, String> {
      * @throws Resources.NotFoundException
      */
     private StockData readLine(final String line, TaskType taskType) throws Resources.NotFoundException, ParseException {
+        if (line.contains(parentFragment.getActivity().getString(R.string.notAvailable))) {
+            throw new Resources.NotFoundException();
+        }
         if (line.contains(parentFragment.getActivity().getString(R.string.headerTag))
                 && line.contains(parentFragment.getActivity().getString(R.string.error404))) {
             throw new Resources.NotFoundException();
@@ -150,7 +153,8 @@ public class QueryTask extends AsyncTask<String, Object, String> {
 
         switch (taskType) {
             case StockTask:
-                return new StockData(data[6], symbol, Calendar.getInstance(),
+                companyName = data[6].replaceAll("\"", "");
+                return new StockData(companyName, symbol, Calendar.getInstance(),
                         Double.parseDouble(data[0]), Double.parseDouble(data[2]), Double.parseDouble(data[1]),
                         Double.parseDouble(data[3]), Double.parseDouble(data[4]), Long.parseLong(data[5]));
             case ChartTask:

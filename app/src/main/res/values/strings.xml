@@ -12,5 +12,6 @@
     <string name="error404">404 Not Found</string>
     <string name="unableResolveHost">The server could not be contacted</string>
     <string name="go">Go</string>
+    <string name="notAvailable">N/A</string>
 
 </resources>
