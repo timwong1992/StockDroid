@@ -6,6 +6,9 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.stockdroid.app.R;
+import com.example.stockdroid.app.StockListener;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -23,7 +26,7 @@ import java.net.UnknownHostException;
  *
  * Created by tim on 5/16/14.
  */
-class QueryTask extends AsyncTask<String, Object, String> {
+public class QueryTask extends AsyncTask<String, Object, String> {
     // Static constants
     private static final String TAG = "QueryTask.java";
     private static final int BUFFER_SIZE = 512;

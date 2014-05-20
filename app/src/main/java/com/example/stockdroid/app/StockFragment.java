@@ -1,9 +1,7 @@
 package com.example.stockdroid.app;
 
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
@@ -11,12 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -31,8 +24,9 @@ public class StockFragment extends Fragment {
 
     // GUI elements
     private RelativeLayout layout;
-    private EditText searchEditText;
-    private Button searchButton;
+//    private EditText searchEditText;
+    private SearchWidget searchWidget;
+//    private Button searchButton;
     private boolean hasSearched;
 
     // OnClickListener to detect when query is launched. On default, gathers one week's worth of data.
@@ -43,7 +37,7 @@ public class StockFragment extends Fragment {
             Calendar cal2 = Calendar.getInstance();
             cal.add(Calendar.WEEK_OF_YEAR, -1);
 
-            final String symbol = searchEditText.getText().toString();
+            final String symbol = searchWidget.getSearchEditText().getText().toString();
             if (symbol.equals("") || symbol == null) {
                 Toast.makeText(getActivity().getApplicationContext(), getString(R.string.noSymbolError), 3000).show();
                 return;
@@ -66,28 +60,10 @@ public class StockFragment extends Fragment {
             System.out.println("Focus changed: " + hasFocus);
             final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             if (hasFocus) {
-                imm.showSoftInput(searchEditText, InputMethodManager.SHOW_IMPLICIT);
+                imm.showSoftInput(searchWidget.getSearchEditText(), InputMethodManager.SHOW_IMPLICIT);
             } else {
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
             }
-        }
-    };
-
-    private Animation.AnimationListener animationListener = new Animation.AnimationListener() {
-        @Override
-        public void onAnimationStart(Animation animation) {
-
-        }
-
-        @Override
-        public void onAnimationEnd(Animation animation) {
-            RelativeLayout.LayoutParams params = layoutParamsFactory();
-
-        }
-
-        @Override
-        public void onAnimationRepeat(Animation animation) {
-
         }
     };
 
@@ -98,7 +74,11 @@ public class StockFragment extends Fragment {
         super();
     }
 
-    private RelativeLayout.LayoutParams layoutParamsFactory() {
+    /**
+     * Creates a layoutparams object with wrap_content on default.
+     * @return new layoutparams object
+     */
+    private RelativeLayout.LayoutParams createLayoutParams() {
         return new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
     }
 
@@ -108,25 +88,20 @@ public class StockFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_stock, container, false);
         layout = (RelativeLayout) rootView.findViewById(R.id.mainLayout);
 
-        searchEditText = new EditText(getActivity().getApplicationContext());
-        searchEditText.setHint(getString(R.string.defaultText));
-        searchEditText.setOnFocusChangeListener(searchOnFocusListener);
-        searchEditText.setTextColor(Color.BLACK);
+        //View searchWidgetView = inflater.inflate(R.layout.search_widget, layout, true);
 
-        searchButton = new Button(getActivity().getApplicationContext());
-        searchButton.setText(getActivity().getString(R.string.go));
-        searchButton.setOnClickListener(searchOnClickListener);
+        searchWidget = new SearchWidget(rootView.getContext(), null, layout);
+        searchWidget.getSearchButton().setOnClickListener(searchOnClickListener);
+
+        RelativeLayout.LayoutParams params = createLayoutParams();
+        params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        params.addRule(RelativeLayout.CENTER_VERTICAL);
+
+        layout.addView(searchWidget.getLayout(), params);
+
+        //searchWidget.getSearchEditText().setOnFocusChangeListener(searchOnFocusListener);
 
         hasSearched = false;
-
-        RelativeLayout.LayoutParams searchEditTextParams = layoutParamsFactory();
-        searchEditTextParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        searchEditTextParams.addRule(RelativeLayout.CENTER_VERTICAL);
-        RelativeLayout.LayoutParams searchButtonParams = layoutParamsFactory();
-        searchButtonParams.addRule(RelativeLayout.RIGHT_OF, R.id.searchEditText);
-
-        layout.addView(searchEditText, searchEditTextParams);
-        layout.addView(searchButton, searchButtonParams);
         return rootView;
     }
 
@@ -141,9 +116,9 @@ public class StockFragment extends Fragment {
 
         int optionBarHeight = getResources().getDimensionPixelSize(getResources().getIdentifier("status_bar_height", "dimen", "android"));
         int[] position = new int[2]; // array to hold x y coordinates
-        searchEditText.getLocationOnScreen(position);
+        searchWidget.getLayout().getLocationOnScreen(position);
 
-        searchEditText.animate().x(position[0]).y(optionBarHeight).setDuration(500);
+        searchWidget.getLayout().animate().x(position[0]).y(optionBarHeight).setDuration(500);
     }
 
     private class MainStockListener implements StockListener {
