@@ -1,4 +1,4 @@
-package com.example.stockdroid.app;
+package com.example.stockdroid.app.listener;
 
 /**
  * Interface to allow data passing between tasks and fragments.

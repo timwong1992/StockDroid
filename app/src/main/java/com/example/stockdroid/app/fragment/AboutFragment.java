@@ -1,4 +1,4 @@
-package com.example.stockdroid.app;
+package com.example.stockdroid.app.fragment;
 
 import android.app.Fragment;
 

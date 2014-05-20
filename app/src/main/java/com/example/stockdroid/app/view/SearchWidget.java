@@ -1,4 +1,4 @@
-package com.example.stockdroid.app;
+package com.example.stockdroid.app.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+
+import com.example.stockdroid.app.R;
 
 /**
  * Created by tim on 5/19/14.

@@ -1,4 +1,4 @@
-package com.example.stockdroid.app;
+package com.example.stockdroid.app.task;
 
 import android.app.Fragment;
 import android.content.res.Resources;
@@ -7,7 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.stockdroid.app.R;
-import com.example.stockdroid.app.StockListener;
+import com.example.stockdroid.app.listener.StockListener;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;

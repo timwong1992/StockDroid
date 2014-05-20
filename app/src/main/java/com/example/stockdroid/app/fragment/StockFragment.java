@@ -1,4 +1,4 @@
-package com.example.stockdroid.app;
+package com.example.stockdroid.app.fragment;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -12,6 +12,11 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.example.stockdroid.app.task.QueryTask;
+import com.example.stockdroid.app.R;
+import com.example.stockdroid.app.view.SearchWidget;
+import com.example.stockdroid.app.listener.StockListener;
 
 import java.util.Calendar;
 

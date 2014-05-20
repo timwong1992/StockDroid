@@ -1,9 +1,12 @@
-package com.example.stockdroid.app;
+package com.example.stockdroid.app.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.example.stockdroid.app.R;
+import com.example.stockdroid.app.fragment.StockFragment;
 
 
 public class StockActivity extends Activity {
