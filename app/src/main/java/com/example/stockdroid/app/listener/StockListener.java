@@ -1,10 +1,14 @@
 package com.example.stockdroid.app.listener;
 
+import com.example.stockdroid.app.stock.StockData;
+
+import java.util.List;
+
 /**
  * Interface to allow data passing between tasks and fragments.
  *
  * Created by tim on 5/17/14.
  */
 public interface StockListener {
-    public void onStockLoaded(final String symbol, final String stockData, final String chartData);
+    public void onStockLoaded(final List<StockData> stocksData);
 }

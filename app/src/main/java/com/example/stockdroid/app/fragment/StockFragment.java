@@ -13,12 +13,14 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.example.stockdroid.app.stock.StockData;
 import com.example.stockdroid.app.task.QueryTask;
 import com.example.stockdroid.app.R;
 import com.example.stockdroid.app.view.SearchWidget;
 import com.example.stockdroid.app.listener.StockListener;
 
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * THe main fragment to view stock information.
@@ -41,6 +43,8 @@ public class StockFragment extends Fragment {
             Calendar cal = Calendar.getInstance();
             Calendar cal2 = Calendar.getInstance();
             cal.add(Calendar.WEEK_OF_YEAR, -1);
+            cal.add(Calendar.DAY_OF_YEAR, -1);
+            cal2.add(Calendar.DAY_OF_YEAR, -1);
 
             final String symbol = searchWidget.getSearchEditText().getText().toString();
             if (symbol.equals("") || symbol == null) {
@@ -128,13 +132,14 @@ public class StockFragment extends Fragment {
 
     private class MainStockListener implements StockListener {
         @Override
-        public void onStockLoaded(String symbol, String stockData, String chartData) {
+        public void onStockLoaded(List<StockData> stocksData) {
             if (!hasSearched) {
                 moveSearchBar();
                 hasSearched = true;
             }
-            System.out.println(stockData);
-            System.out.println(chartData);
+            for (StockData stock: stocksData) {
+                System.out.println(stock.getName() + "," + stock.getSymbol() + "," + stock.getDate() + "," + stock.getPrice() + "," + stock.getVolume());
+            }
         }
     }
 

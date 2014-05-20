@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.example.stockdroid.app.R;
 import com.example.stockdroid.app.listener.StockListener;
+import com.example.stockdroid.app.stock.StockData;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -20,6 +21,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.UnknownHostException;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * An AsyncTask that retrieves all the stock data from Yahoo Finance API.
@@ -27,9 +32,13 @@ import java.net.UnknownHostException;
  * Created by tim on 5/16/14.
  */
 public class QueryTask extends AsyncTask<String, Object, String> {
+
+    enum TaskType {
+        StockTask, ChartTask;
+    }
+
     // Static constants
     private static final String TAG = "QueryTask.java";
-    private static final int BUFFER_SIZE = 512;
 
     // Store a reference to the parent fragment that the task was run from
     private final Fragment parentFragment;
@@ -43,8 +52,8 @@ public class QueryTask extends AsyncTask<String, Object, String> {
     private final StockListener stockListener;
 
     // Data
-    private String stockData;
-    private String chartData;
+    private List<StockData> stocksData;
+    private String companyName;
     private String errorMsg;
 
     /**
@@ -64,15 +73,15 @@ public class QueryTask extends AsyncTask<String, Object, String> {
         this.symbol = symbol;
         this.parentFragment = parentFragment;
         this.stockListener = stockListener;
-        stockData = null;
-        chartData = null;
+        stocksData = new LinkedList<>();
         errorMsg = "";
+        companyName = "";
     }
 
     @Override
     protected String doInBackground(String... params) {
-        stockData = getData(stockURI);
-        chartData = getData(chartURI);
+        stocksData.addAll(getData(stockURI, TaskType.StockTask));
+        stocksData.addAll(getData(chartURI, TaskType.ChartTask));
         return null;
     }
 
@@ -83,11 +92,13 @@ public class QueryTask extends AsyncTask<String, Object, String> {
      * @param uri the URI of the data
      * @return data
      */
-    private String getData(final String uri) {
-        final StringBuilder builder = new StringBuilder(BUFFER_SIZE);
+    private List<StockData> getData(final String uri, TaskType taskType) {
         final HttpClient client = new DefaultHttpClient();
         final HttpContext context = new BasicHttpContext();
         final HttpGet get = new HttpGet(uri);
+
+        final List<StockData> data = new LinkedList<>();
+
         BufferedReader reader = null;
 
         try {
@@ -96,7 +107,10 @@ public class QueryTask extends AsyncTask<String, Object, String> {
 
             String line;
             while ((line = reader.readLine()) != null) {
-                readLine(builder, line);
+                final StockData stock = readLine(line, taskType);
+                if (stock != null) {
+                    data.add(stock);
+                }
             }
         } catch (Resources.NotFoundException e) {
             Log.e(TAG, e.toString());
@@ -112,7 +126,7 @@ public class QueryTask extends AsyncTask<String, Object, String> {
                     Log.e(TAG, e.toString());
                 }
             }
-            return builder.toString();
+            return data;
         }
     }
 
@@ -120,17 +134,31 @@ public class QueryTask extends AsyncTask<String, Object, String> {
      * Reads a line from getData().
      * If the line is part of a header tag and has a 404 Not Found error, throw a NotFoundException.
      *
-     * @param builder
      * @param line
      * @throws Resources.NotFoundException
      */
-    private void readLine(final StringBuilder builder, final String line) throws Resources.NotFoundException {
+    private StockData readLine(final String line, TaskType taskType) throws Resources.NotFoundException, ParseException {
         if (line.contains(parentFragment.getActivity().getString(R.string.headerTag))
                 && line.contains(parentFragment.getActivity().getString(R.string.error404))) {
             throw new Resources.NotFoundException();
         }
-        builder.append(line);
-        builder.append("\n");
+        if (line.contains("Date,Open,High")) {
+            return null; // ignore CSV header
+        }
+
+        final String[] data = line.split(",");
+
+        switch (taskType) {
+            case StockTask:
+                return new StockData(data[6], symbol, Calendar.getInstance(),
+                        Double.parseDouble(data[0]), Double.parseDouble(data[2]), Double.parseDouble(data[1]),
+                        Double.parseDouble(data[3]), Double.parseDouble(data[4]), Long.parseLong(data[5]));
+            case ChartTask:
+                return new StockData(companyName, symbol, data[0], Double.parseDouble(data[6]),
+                    0, 0, 0, 0, Long.parseLong(data[5]));
+            default:
+                throw new Resources.NotFoundException();
+        }
     }
 
     @Override
@@ -139,7 +167,7 @@ public class QueryTask extends AsyncTask<String, Object, String> {
             Toast.makeText(parentFragment.getActivity().getApplicationContext(), errorMsg, 3000).show();
             return;
         }
-        stockListener.onStockLoaded(symbol, stockData, chartData);
+        stockListener.onStockLoaded(stocksData);
     }
 
 }
