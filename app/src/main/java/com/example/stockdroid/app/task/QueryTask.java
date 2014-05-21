@@ -151,7 +151,7 @@ public class QueryTask extends AsyncTask<String, Object, String> {
                 && line.contains(parentFragment.getActivity().getString(R.string.error404))) {
             throw new Resources.NotFoundException();
         }
-        if (line.contains(.getString(R.string.csvheader))) {
+        if (line.contains(parentFragment.getString(R.string.csvheader))) {
             return null; // ignore CSV header
         }
 
