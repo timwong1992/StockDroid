@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.text.Layout;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.example.stockdroid.app.stock.StockData;
@@ -18,6 +20,7 @@ import com.example.stockdroid.app.task.QueryTask;
 import com.example.stockdroid.app.R;
 import com.example.stockdroid.app.view.SearchWidget;
 import com.example.stockdroid.app.listener.StockListener;
+import com.example.stockdroid.app.view.StockView;
 
 import java.util.Calendar;
 import java.util.List;
@@ -31,9 +34,8 @@ public class StockFragment extends Fragment {
 
     // GUI elements
     private RelativeLayout layout;
-//    private EditText searchEditText;
+    private StockView stockDataView;
     private SearchWidget searchWidget;
-//    private Button searchButton;
     private boolean hasSearched;
 
     // OnClickListener to detect when query is launched. On default, gathers one week's worth of data.
@@ -106,7 +108,7 @@ public class StockFragment extends Fragment {
         params.addRule(RelativeLayout.CENTER_HORIZONTAL);
         params.addRule(RelativeLayout.CENTER_VERTICAL);
 
-        layout.addView(searchWidget.getLayout(), params);
+        layout.addView(searchWidget.getLayout(), 0, params);
 
         //searchWidget.getSearchEditText().setOnFocusChangeListener(searchOnFocusListener);
 
@@ -140,6 +142,14 @@ public class StockFragment extends Fragment {
             for (StockData stock: stocksData) {
                 System.out.println(stock.getName() + "," + stock.getSymbol() + "," + stock.getDate() + "," + stock.getPrice() + "," + stock.getVolume());
             }
+            LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//            stockDataView = (ScrollView) inflater.inflate(R.layout.data_view, null);
+            stockDataView = new StockView(layout.getContext());
+            stockDataView.getNameTextView().setText(stocksData.get(0).getName());
+            stockDataView.getPriceTextView().setText(Double.toString(stocksData.get(0).getPrice()));
+            RelativeLayout.LayoutParams params = createLayoutParams();
+            params.addRule(RelativeLayout.BELOW);
+            layout.addView(stockDataView.getScrollView(), 1, params);
         }
     }
 
