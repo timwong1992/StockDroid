@@ -21,22 +21,21 @@ import android.webkit.WebView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.example.stockdroid.app.R;
+import com.example.stockdroid.app.listener.StockListener;
 import com.example.stockdroid.app.stock.StockData;
 import com.example.stockdroid.app.task.QueryTask;
-import com.example.stockdroid.app.R;
 import com.example.stockdroid.app.view.SearchWidget;
-import com.example.stockdroid.app.listener.StockListener;
 import com.example.stockdroid.app.view.StockView;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.List;
 
 /**
- * THe main fragment to view stock information.
- *
+ * The main fragment to view stock information.
+ * <p/>
  * Created by tim on 5/13/14.
  */
 public class StockFragment extends Fragment {
@@ -99,6 +98,7 @@ public class StockFragment extends Fragment {
 
     /**
      * Creates a layoutparams object with wrap_content on default.
+     *
      * @return new layoutparams object
      */
     private RelativeLayout.LayoutParams createLayoutParams() {
@@ -131,7 +131,7 @@ public class StockFragment extends Fragment {
     }
 
     /**
-     * Animates the search bar to the top upon successfully loading stock data.
+     * Animates the search bar to the top of the screen.
      */
     private void moveSearchBar() {
         // Get the display dimensions and store in Point object
@@ -146,6 +146,10 @@ public class StockFragment extends Fragment {
         searchWidget.getLayout().animate().x(position[0]).y(optionBarHeight).setDuration(500);
     }
 
+    /**
+     * This class is a concrete implementation of the StockListener interface. It allows for data communication
+     * between the StockFragment and other classes that contain a StockListener.
+     */
     private class MainStockListener implements StockListener {
         @Override
         public void onStockLoaded(List<StockData> stocksData) {
@@ -154,81 +158,99 @@ public class StockFragment extends Fragment {
                 hasSearched = true;
             }
 
-            // iif a stockview from a previous query exists, remove that view
+            // if a stock view from a previous query exists, remove that view
             if (stockDataView != null) {
                 layout.removeView(stockDataView.getScrollView());
             }
 
-            stockDataView = new StockView(layout.getContext());
-            stockDataView.getNameTextView().setText(stocksData.get(0).getName());
-            stockDataView.getSymbolTextView().setText("(" + stocksData.get(0).getSymbol() + ")");
-            stockDataView.getPriceTextView().setText(String.format("%.2f", stocksData.get(0).getPrice()));
+            stockDataView = createStockView(stocksData.get(0));
+            RelativeLayout.LayoutParams params = createLayoutParams();
+            params.addRule(RelativeLayout.BELOW, R.layout.search_widget);
+            layout.addView(stockDataView.getScrollView(), params);
+
+            // bring search widget to front-most z index
+            searchWidget.getLayout().bringToFront();
+
+            // attempt to load the chart. If an error occurs while creating the chart, an exception will be thrown
+            // and handled in a fail-safe way that does not force quit the application
+            try {
+                loadChart(stocksData);
+            } catch (IOException e) {
+                Log.e(TAG, getActivity().getString(R.string.chartError), e);
+                Toast.makeText(getActivity().getApplicationContext(), getActivity().getString(R.string.chartError), 3000);
+                return;
+            }
+        }
+
+        /**
+         * Creates and sets up a stock view instance, given a stock.
+         *
+         * @param stock a StockData object containing details on a stock
+         * @return a populated StockView instance
+         */
+        private StockView createStockView(StockData stock) {
+            StockView stockDataView = new StockView(layout.getContext());
+            stockDataView.getNameTextView().setText(stock.getName());
+            stockDataView.getSymbolTextView().setText("(" + stock.getSymbol() + ")");
+            stockDataView.getPriceTextView().setText(String.format("%.2f", stock.getPrice()));
 
             final StringBuilder builder = new StringBuilder(8);
-            if (stocksData.get(0).getChange() < 0) {
+            if (stock.getChange() < 0) {
                 stockDataView.getChangeTextView().setTextColor(Color.RED);
-            } else if (stocksData.get(0).getChange() > 0) {
+            } else if (stock.getChange() > 0) {
                 stockDataView.getChangeTextView().setTextColor(Color.GREEN);
                 builder.append("+");
             } else {
                 stockDataView.getChangeTextView().setTextColor(Color.BLACK);
             }
-            builder.append(String.format("%.2f", stocksData.get(0).getChange()));
+            builder.append(String.format("%.2f", stock.getChange()));
             stockDataView.getChangeTextView().setText(builder.toString());
 
-            RelativeLayout.LayoutParams params = createLayoutParams();
-            params.addRule(RelativeLayout.BELOW, R.layout.search_widget);
-
-            Animation fadeIn = new AlphaAnimation(0,1);
+            // Set up an animation for the stock view
+            Animation fadeIn = new AlphaAnimation(0, 1);
             fadeIn.setInterpolator(new DecelerateInterpolator());
             fadeIn.setDuration(500);
             stockDataView.getScrollView().setAnimation(fadeIn);
 
-            layout.addView(stockDataView.getScrollView(), params);
+            return stockDataView;
+        }
 
-            searchWidget.getLayout().bringToFront();
+        /**
+         * Loads a chart of historical stock data using Google Charts JavaScript API.
+         * The HTML file data_chart.html must exist as the HTML file hosts the chart, which is
+         * dynamically generated using Javascript and injected into the HTML file.
+         *
+         * @param stocksData a list of all the stocks retrieved from the search
+         * @throws IOException
+         */
+        private void loadChart(List<StockData> stocksData) throws IOException {
+            AssetManager assetManager = getActivity().getResources().getAssets();
+            InputStream inputStream = assetManager.open(getActivity().getString(R.string.dataChartURI));
+            int size = inputStream.available();
+            byte[] buffer = new byte[size];
+            inputStream.read(buffer);
+            String content = new String(buffer, "UTF-8");
+            inputStream.close();
 
-            // the view used to hold the chart
-            WebView webView = (WebView) getActivity().findViewById(R.id.chartWebView);
-            WebSettings webSettings = webView.getSettings();
-            webSettings.setJavaScriptEnabled(true);
-            webSettings.setBuiltInZoomControls(true);
-
-            String content = null;
-            try {
-                AssetManager assetManager = getActivity().getResources().getAssets();
-
-                InputStream in = assetManager.open(getActivity().getString(R.string.dataChartURI));
-                byte[] bytes = readFully(in);
-                content = new String(bytes, "UTF-8");
-            } catch (IOException e) {
-                Log.e(TAG, getActivity().getString(R.string.chartError), e);
-                Toast.makeText(getActivity().getApplicationContext(), getActivity().getString(R.string.chartError), 3000);
-            }
-
-            Object[] datePriceArray = new Object[stocksData.size()*2];
+            // dynamically insert values into HTML
+            Object[] datePriceArray = new Object[stocksData.size() * 2];
             int stockIndex = stocksData.size() - 1;
             for (int i = 0; i < datePriceArray.length; i++) {
                 if (i % 2 == 0) {
                     datePriceArray[i] = stocksData.get(stockIndex).getDate();
-                }
-                else if (i % 2 != 0) {
+                } else if (i % 2 != 0) {
                     datePriceArray[i] = stocksData.get(stockIndex).getPrice();
                     stockIndex--;
                 }
             }
 
+            // after setting up on the backend, create and show the view with loaded data
+            WebView webView = (WebView) getActivity().findViewById(R.id.chartWebView);
+            WebSettings webSettings = webView.getSettings();
+            webSettings.setJavaScriptEnabled(true);
             webView.loadDataWithBaseURL(ASSET_PATH, String.format(content, datePriceArray), "text/html", "utf-8", null);
         }
     }
 
-    private static byte[] readFully(InputStream in) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        for (int count; (count = in.read(buffer)) != -1; ) {
-            out.write(buffer, 0, count);
-        }
-        return out.toByteArray();
-    }
 
 }

@@ -4,7 +4,7 @@ import android.app.Fragment;
 
 /**
  * Fragment to display information about the application.
- *
+ * <p/>
  * Created by tim on 5/18/14.
  */
 public class AboutFragment extends Fragment {
