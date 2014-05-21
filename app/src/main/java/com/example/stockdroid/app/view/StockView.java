@@ -15,7 +15,7 @@ import com.example.stockdroid.app.R;
 public class StockView extends ScrollView {
 
     private final ScrollView scrollView;
-    private final TableLayout layout;
+    private final LinearLayout layout;
     private final TextView nameTextView;
     private final TextView symbolTextView;
     private final TextView priceTextView;
@@ -27,7 +27,7 @@ public class StockView extends ScrollView {
 //        layout = (LinearLayout) findViewById(R.id.stockViewLayout);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         scrollView = (ScrollView) inflater.inflate(R.layout.data_view, null);
-        layout = (TableLayout) scrollView.findViewById(R.id.stockViewLayout);
+        layout = (LinearLayout) scrollView.findViewById(R.id.stockViewLayout);
         nameTextView = (TextView) layout.findViewById(R.id.nameTextView);
         symbolTextView = (TextView) layout.findViewById(R.id.symbolTextView);
         priceTextView = (TextView) layout.findViewById(R.id.priceTextView);

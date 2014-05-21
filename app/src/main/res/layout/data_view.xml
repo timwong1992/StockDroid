@@ -6,16 +6,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/scrollView">
 
-    <TableLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:paddingTop="60dp"
-        android:id="@+id/stockViewLayout" >
+        android:id="@+id/stockViewLayout"
+        android:paddingTop="60dp">
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/companyRow">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -27,14 +28,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/symbolTextView"
-                android:paddingLeft="20px" />
-        </TableRow>
+                android:id="@+id/symbolTextView" />
+        </LinearLayout>
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/priceRow">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -47,6 +47,12 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:id="@+id/changeTextView" />
-        </TableRow>
-    </TableLayout>
+        </LinearLayout>
+
+        <WebView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/chartWebView"
+            android:paddingTop="10dp" />
+    </LinearLayout>
 </ScrollView>

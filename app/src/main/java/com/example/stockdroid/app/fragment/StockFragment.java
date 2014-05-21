@@ -16,6 +16,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -183,7 +184,10 @@ public class StockFragment extends Fragment {
             layout.addView(stockDataView.getScrollView(), 1, params);
 
             // the view used to hold the chart
-            WebView webView = new WebView(layout.getContext());
+            WebView webView = (WebView) getActivity().findViewById(R.id.chartWebView);
+            WebSettings webSettings = webView.getSettings();
+            webSettings.setJavaScriptEnabled(true);
+            webSettings.setBuiltInZoomControls(true);
 
             String content = null;
             try {
@@ -197,9 +201,6 @@ public class StockFragment extends Fragment {
                 Toast.makeText(getActivity().getApplicationContext(), getActivity().getString(R.string.chartError), 3000);
             }
 
-            if (content != null)
-                System.out.println(content);
-
             Object[] datePriceArray = new Object[stocksData.size()*2];
             int stockIndex = 0;
             for (int i = 0; i < datePriceArray.length; i++) {
@@ -211,11 +212,8 @@ public class StockFragment extends Fragment {
                     stockIndex++;
                 }
             }
-            String formattedContent = String.format(content, datePriceArray);
 
-            System.out.println(formattedContent);
-
-            webView.loadDataWithBaseURL(ASSET_PATH, formattedContent, "text/html", "utf-8", null);
+            webView.loadDataWithBaseURL(ASSET_PATH, String.format(content, datePriceArray), "text/html", "utf-8", null);
             webView.requestFocusFromTouch();
         }
     }
