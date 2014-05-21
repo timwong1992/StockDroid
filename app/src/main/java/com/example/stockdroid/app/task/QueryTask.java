@@ -120,10 +120,10 @@ public class QueryTask extends AsyncTask<String, Object, String> {
             errorMsg = parentFragment.getActivity().getString(R.string.unableResolveHost);
         } catch (ParseException e) {
             Log.e(TAG, e.toString());
-            errorMsg = "A parsing exception occurred.";
+            errorMsg = parentFragment.getString(R.string.parseExceptionMsg);
         } catch (NumberFormatException e) {
             Log.e(TAG, e.toString());
-            errorMsg = "A number formatting exception occurred.";
+            errorMsg = parentFragment.getString(R.string.numberFormatExceptionMsg);
         } finally {
             if (reader != null) {
                 try {

@@ -15,5 +15,7 @@
     <string name="notAvailable">N/A</string>
     <string name="dataChartURI">data_chart.html</string>
     <string name="chartError">An error occurred when generating the chart.</string>
+    <string name="parseExceptionMsg">A parsing exception occurred.</string>
+    <string name="numberFormatExceptionMsg">A number formatting exception occurred.</string>
 
 </resources>
