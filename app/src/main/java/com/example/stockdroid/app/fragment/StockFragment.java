@@ -147,20 +147,18 @@ public class StockFragment extends Fragment {
             stockDataView = new StockView(layout.getContext());
             stockDataView.getNameTextView().setText(stocksData.get(0).getName());
             stockDataView.getSymbolTextView().setText("(" + stocksData.get(0).getSymbol() + ")");
-            stockDataView.getPriceTextView().setText(Double.toString(stocksData.get(0).getPrice()));
+            stockDataView.getPriceTextView().setText(String.format("%.2f", stocksData.get(0).getPrice()));
 
             final StringBuilder builder = new StringBuilder(8);
             if (stocksData.get(0).getChange() < 0) {
                 stockDataView.getChangeTextView().setTextColor(Color.RED);
-                builder.append("-");
-
             } else if (stocksData.get(0).getChange() > 0) {
                 stockDataView.getChangeTextView().setTextColor(Color.GREEN);
                 builder.append("+");
             } else {
                 stockDataView.getChangeTextView().setTextColor(Color.BLACK);
             }
-            builder.append(Double.toString(stocksData.get(0).getChange()));
+            builder.append(String.format("%.2f", stocksData.get(0).getChange()));
             stockDataView.getChangeTextView().setText(builder.toString());
 
             RelativeLayout.LayoutParams params = createLayoutParams();
