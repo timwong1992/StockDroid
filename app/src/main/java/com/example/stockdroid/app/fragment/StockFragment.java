@@ -122,7 +122,7 @@ public class StockFragment extends Fragment {
         params.addRule(RelativeLayout.CENTER_HORIZONTAL);
         params.addRule(RelativeLayout.CENTER_VERTICAL);
 
-        layout.addView(searchWidget.getLayout(), 0, params);
+        layout.addView(searchWidget.getLayout(), params);
 
         //searchWidget.getSearchEditText().setOnFocusChangeListener(searchOnFocusListener);
 
@@ -154,6 +154,11 @@ public class StockFragment extends Fragment {
                 hasSearched = true;
             }
 
+            // iif a stockview from a previous query exists, remove that view
+            if (stockDataView != null) {
+                layout.removeView(stockDataView.getScrollView());
+            }
+
             stockDataView = new StockView(layout.getContext());
             stockDataView.getNameTextView().setText(stocksData.get(0).getName());
             stockDataView.getSymbolTextView().setText("(" + stocksData.get(0).getSymbol() + ")");
@@ -172,18 +177,16 @@ public class StockFragment extends Fragment {
             stockDataView.getChangeTextView().setText(builder.toString());
 
             RelativeLayout.LayoutParams params = createLayoutParams();
-            params.addRule(RelativeLayout.BELOW);
+            params.addRule(RelativeLayout.BELOW, R.layout.search_widget);
 
-            // if data from a previous query is already on the view, remove that view
-            if (layout.getChildAt(1) != null) {
-                layout.removeViewAt(1);
-            }
             Animation fadeIn = new AlphaAnimation(0,1);
             fadeIn.setInterpolator(new DecelerateInterpolator());
             fadeIn.setDuration(500);
             stockDataView.getScrollView().setAnimation(fadeIn);
 
-            layout.addView(stockDataView.getScrollView(), 1, params);
+            layout.addView(stockDataView.getScrollView(), params);
+
+            searchWidget.getLayout().bringToFront();
 
             // the view used to hold the chart
             WebView webView = (WebView) getActivity().findViewById(R.id.chartWebView);
@@ -203,7 +206,7 @@ public class StockFragment extends Fragment {
                 Toast.makeText(getActivity().getApplicationContext(), getActivity().getString(R.string.chartError), 3000);
             }
 
-            Object[] datePriceArray = new Object[stocksData.size()*2];  
+            Object[] datePriceArray = new Object[stocksData.size()*2];
             int stockIndex = stocksData.size() - 1;
             for (int i = 0; i < datePriceArray.length; i++) {
                 if (i % 2 == 0) {

@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/scrollView">
+    android:id="@+id/scrollView"
+    android:paddingTop="60dp">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/stockViewLayout"
-        android:paddingTop="60dp">
+        android:id="@+id/stockViewLayout">
 
         <LinearLayout
             android:orientation="horizontal"
