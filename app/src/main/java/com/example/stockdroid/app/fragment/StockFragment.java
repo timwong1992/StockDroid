@@ -2,10 +2,11 @@ package com.example.stockdroid.app.fragment;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.text.Layout;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +16,8 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.example.stockdroid.app.stock.StockData;
@@ -26,6 +27,9 @@ import com.example.stockdroid.app.view.SearchWidget;
 import com.example.stockdroid.app.listener.StockListener;
 import com.example.stockdroid.app.view.StockView;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.List;
 
@@ -41,6 +45,9 @@ public class StockFragment extends Fragment {
     private StockView stockDataView;
     private SearchWidget searchWidget;
     private boolean hasSearched;
+
+    private static final String TAG = "StockFragment.java";
+    public static final String ASSET_PATH = "file:///android_asset/";
 
     // OnClickListener to detect when query is launched. On default, gathers one week's worth of data.
     private View.OnClickListener searchOnClickListener = new View.OnClickListener() {
@@ -174,7 +181,52 @@ public class StockFragment extends Fragment {
             stockDataView.getScrollView().setAnimation(fadeIn);
 
             layout.addView(stockDataView.getScrollView(), 1, params);
+
+            // the view used to hold the chart
+            WebView webView = new WebView(layout.getContext());
+
+            String content = null;
+            try {
+                AssetManager assetManager = getActivity().getResources().getAssets();
+
+                InputStream in = assetManager.open(getActivity().getString(R.string.dataChartURI));
+                byte[] bytes = readFully(in);
+                content = new String(bytes, "UTF-8");
+            } catch (IOException e) {
+                Log.e(TAG, getActivity().getString(R.string.chartError), e);
+                Toast.makeText(getActivity().getApplicationContext(), getActivity().getString(R.string.chartError), 3000);
+            }
+
+            if (content != null)
+                System.out.println(content);
+
+            Object[] datePriceArray = new Object[stocksData.size()*2];
+            int stockIndex = 0;
+            for (int i = 0; i < datePriceArray.length; i++) {
+                if (i % 2 == 0) {
+                    datePriceArray[i] = stocksData.get(stockIndex).getDate();
+                }
+                else if (i % 2 != 0) {
+                    datePriceArray[i] = stocksData.get(stockIndex).getPrice();
+                    stockIndex++;
+                }
+            }
+            String formattedContent = String.format(content, datePriceArray);
+
+            System.out.println(formattedContent);
+
+            webView.loadDataWithBaseURL(ASSET_PATH, formattedContent, "text/html", "utf-8", null);
+            webView.requestFocusFromTouch();
         }
+    }
+
+    private static byte[] readFully(InputStream in) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        for (int count; (count = in.read(buffer)) != -1; ) {
+            out.write(buffer, 0, count);
+        }
+        return out.toByteArray();
     }
 
 }

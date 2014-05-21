@@ -13,5 +13,7 @@
     <string name="unableResolveHost">The server could not be contacted</string>
     <string name="go">Go</string>
     <string name="notAvailable">N/A</string>
+    <string name="dataChartURI">data_chart.html</string>
+    <string name="chartError">An error occurred when generating the chart.</string>
 
 </resources>
