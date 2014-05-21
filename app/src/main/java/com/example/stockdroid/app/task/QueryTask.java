@@ -118,6 +118,12 @@ public class QueryTask extends AsyncTask<String, Object, String> {
         } catch (UnknownHostException e) {
             Log.e(TAG, e.toString());
             errorMsg = parentFragment.getActivity().getString(R.string.unableResolveHost);
+        } catch (ParseException e) {
+            Log.e(TAG, e.toString());
+            errorMsg = "A parsing exception occurred.";
+        } catch (NumberFormatException e) {
+            Log.e(TAG, e.toString());
+            errorMsg = "A number formatting exception occurred.";
         } finally {
             if (reader != null) {
                 try {
@@ -137,7 +143,7 @@ public class QueryTask extends AsyncTask<String, Object, String> {
      * @param line
      * @throws Resources.NotFoundException
      */
-    private StockData readLine(final String line, TaskType taskType) throws Resources.NotFoundException, ParseException {
+    private StockData readLine(final String line, TaskType taskType) throws Resources.NotFoundException, ParseException, NumberFormatException {
         if (line.contains(parentFragment.getActivity().getString(R.string.notAvailable))) {
             throw new Resources.NotFoundException();
         }
@@ -155,8 +161,8 @@ public class QueryTask extends AsyncTask<String, Object, String> {
             case StockTask:
                 companyName = data[6].replaceAll("\"", "");
                 return new StockData(companyName, symbol, Calendar.getInstance(),
-                        Double.parseDouble(data[0]), Double.parseDouble(data[2]), Double.parseDouble(data[1]),
-                        Double.parseDouble(data[3]), Double.parseDouble(data[4]), Long.parseLong(data[5]));
+                            Double.parseDouble(data[0]), Double.parseDouble(data[2]), Double.parseDouble(data[1]),
+                            Double.parseDouble(data[4]), Double.parseDouble(data[5]), Long.parseLong(data[3]));
             case ChartTask:
                 return new StockData(companyName, symbol, data[0], Double.parseDouble(data[6]),
                     0, 0, 0, 0, Long.parseLong(data[5]));
