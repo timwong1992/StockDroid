@@ -115,6 +115,8 @@ public class StockFragment extends Fragment {
 
         searchWidget = new SearchWidget(rootView.getContext(), null);
         searchWidget.getSearchButton().setOnClickListener(searchOnClickListener);
+        searchWidget.getSearchEditText().setFocusable(true);
+        searchWidget.getSearchButton().setClickable(true);
 
         RelativeLayout.LayoutParams params = createLayoutParams();
         params.addRule(RelativeLayout.CENTER_HORIZONTAL);
@@ -201,20 +203,19 @@ public class StockFragment extends Fragment {
                 Toast.makeText(getActivity().getApplicationContext(), getActivity().getString(R.string.chartError), 3000);
             }
 
-            Object[] datePriceArray = new Object[stocksData.size()*2];
-            int stockIndex = 0;
+            Object[] datePriceArray = new Object[stocksData.size()*2];  
+            int stockIndex = stocksData.size() - 1;
             for (int i = 0; i < datePriceArray.length; i++) {
                 if (i % 2 == 0) {
                     datePriceArray[i] = stocksData.get(stockIndex).getDate();
                 }
                 else if (i % 2 != 0) {
                     datePriceArray[i] = stocksData.get(stockIndex).getPrice();
-                    stockIndex++;
+                    stockIndex--;
                 }
             }
 
             webView.loadDataWithBaseURL(ASSET_PATH, String.format(content, datePriceArray), "text/html", "utf-8", null);
-            webView.requestFocusFromTouch();
         }
     }
 

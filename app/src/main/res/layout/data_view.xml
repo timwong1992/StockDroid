@@ -9,7 +9,7 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/stockViewLayout"
         android:paddingTop="60dp">
 
@@ -22,13 +22,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:id="@+id/nameTextView" />
+                android:id="@+id/nameTextView"
+                android:focusableInTouchMode="false"
+                android:focusable="false" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/symbolTextView" />
+                android:id="@+id/symbolTextView"
+                android:focusable="false"
+                android:focusableInTouchMode="false" />
         </LinearLayout>
 
         <LinearLayout
@@ -40,19 +44,25 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/priceTextView" />
+                android:id="@+id/priceTextView"
+                android:focusable="false"
+                android:focusableInTouchMode="false" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/changeTextView" />
+                android:id="@+id/changeTextView"
+                android:focusable="false"
+                android:focusableInTouchMode="false" />
         </LinearLayout>
 
         <WebView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/chartWebView"
-            android:paddingTop="10dp" />
+            android:paddingTop="10dp"
+            android:focusableInTouchMode="false"
+            android:focusable="false" />
     </LinearLayout>
 </ScrollView>
