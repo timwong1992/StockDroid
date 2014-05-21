@@ -10,6 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -101,7 +104,7 @@ public class StockFragment extends Fragment {
 
         //View searchWidgetView = inflater.inflate(R.layout.search_widget, layout, true);
 
-        searchWidget = new SearchWidget(rootView.getContext(), null, layout);
+        searchWidget = new SearchWidget(rootView.getContext(), null);
         searchWidget.getSearchButton().setOnClickListener(searchOnClickListener);
 
         RelativeLayout.LayoutParams params = createLayoutParams();
@@ -139,11 +142,7 @@ public class StockFragment extends Fragment {
                 moveSearchBar();
                 hasSearched = true;
             }
-            for (StockData stock: stocksData) {
-                System.out.println(stock.getName() + "," + stock.getSymbol() + "," + stock.getDate() + "," + stock.getPrice() + "," + stock.getVolume());
-            }
-            LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//            stockDataView = (ScrollView) inflater.inflate(R.layout.data_view, null);
+
             stockDataView = new StockView(layout.getContext());
             stockDataView.getNameTextView().setText(stocksData.get(0).getName());
             stockDataView.getPriceTextView().setText(Double.toString(stocksData.get(0).getPrice()));
@@ -152,6 +151,11 @@ public class StockFragment extends Fragment {
             if (layout.getChildAt(1) != null) {
                 layout.removeViewAt(1);
             }
+            Animation fadeIn = new AlphaAnimation(0,1);
+            fadeIn.setInterpolator(new DecelerateInterpolator());
+            fadeIn.setDuration(500);
+            stockDataView.getScrollView().setAnimation(fadeIn);
+
             layout.addView(stockDataView.getScrollView(), 1, params);
         }
     }

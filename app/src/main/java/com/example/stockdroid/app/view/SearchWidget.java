@@ -18,7 +18,7 @@ public class SearchWidget extends View {
     private final EditText searchEditText;
     private final Button searchButton;
 
-    public SearchWidget(Context context, AttributeSet attributeSet, RelativeLayout parentLayout) {
+    public SearchWidget(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
