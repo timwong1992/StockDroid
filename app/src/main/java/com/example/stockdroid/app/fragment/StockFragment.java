@@ -149,6 +149,9 @@ public class StockFragment extends Fragment {
             stockDataView.getPriceTextView().setText(Double.toString(stocksData.get(0).getPrice()));
             RelativeLayout.LayoutParams params = createLayoutParams();
             params.addRule(RelativeLayout.BELOW);
+            if (layout.getChildAt(1) != null) {
+                layout.removeViewAt(1);
+            }
             layout.addView(stockDataView.getScrollView(), 1, params);
         }
     }
