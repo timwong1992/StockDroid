@@ -65,11 +65,11 @@ public class StockFragment extends Fragment {
                 return;
             }
             // Format: Symbol & Last Trade & Change & Open & Volume & 52 Week Low & 52 Week High (15 min delay)
-            final String stockURI = String.format(getString(R.string.stockURI) + "s=%s&f=l1c1ovjkn",
+            final String stockURI = String.format(getString(R.string.stockURI).replaceAll(" ", "") + "s=%s&f=l1c1ovjkn",
                     symbol);
             // Format: Symbol & Start Month & Start Day & Start Year & End Month & End Day & End Year
             // Months are from 0-11, 0 being January
-            final String chartURI = String.format(getString(R.string.chartURI) + "s=%s&a=%d&b=%s&c=%s&d=%d&e=%s&f=%s&n",
+            final String chartURI = String.format(getString(R.string.chartURI).replaceAll(" ", "") + "s=%s&a=%d&b=%s&c=%s&d=%d&e=%s&f=%s&n",
                     symbol, cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.YEAR), cal2.get(Calendar.MONTH), cal2.get(Calendar.DAY_OF_MONTH), cal2.get(Calendar.YEAR));
             new QueryTask(StockFragment.this, symbol, stockURI, chartURI, new MainStockListener()).execute();
         }
@@ -116,6 +116,7 @@ public class StockFragment extends Fragment {
         searchWidget = new SearchWidget(rootView.getContext(), null);
         searchWidget.getSearchButton().setOnClickListener(searchOnClickListener);
         searchWidget.getSearchEditText().setFocusable(true);
+        searchWidget.getLayout().setFocusableInTouchMode(true);
         searchWidget.getSearchButton().setClickable(true);
 
         RelativeLayout.LayoutParams params = createLayoutParams();

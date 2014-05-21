@@ -1,11 +1,16 @@
 package com.example.stockdroid.app.activity;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.stockdroid.app.R;
+import com.example.stockdroid.app.fragment.AboutFragment;
+import com.example.stockdroid.app.fragment.PortfolioFragment;
 import com.example.stockdroid.app.fragment.StockFragment;
 
 
@@ -35,10 +40,26 @@ public class StockActivity extends Activity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_portfolio:
+                performFragmentTransaction(new PortfolioFragment());
+                break;
+            case R.id.action_about:
+                performFragmentTransaction(new AboutFragment());
+                break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Replaces the activity container with a new Fragment.
+     *
+     * @param fragment the fragment to replace the container
+     */
+    private void performFragmentTransaction(Fragment fragment) {
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }
