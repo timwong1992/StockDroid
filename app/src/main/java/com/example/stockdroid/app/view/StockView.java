@@ -2,9 +2,9 @@ package com.example.stockdroid.app.view;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.example.stockdroid.app.R;
@@ -20,11 +20,11 @@ public class StockView extends ScrollView {
     private final TextView symbolTextView;
     private final TextView priceTextView;
     private final TextView changeTextView;
+    private final Button addStockButton;
 
 
     public StockView(Context context) {
         super(context);
-//        layout = (LinearLayout) findViewById(R.id.stockViewLayout);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         scrollView = (ScrollView) inflater.inflate(R.layout.data_view, null);
         layout = (LinearLayout) scrollView.findViewById(R.id.stockViewLayout);
@@ -32,6 +32,7 @@ public class StockView extends ScrollView {
         symbolTextView = (TextView) layout.findViewById(R.id.symbolTextView);
         priceTextView = (TextView) layout.findViewById(R.id.priceTextView);
         changeTextView = (TextView) layout.findViewById(R.id.changeTextView);
+        addStockButton = (Button) layout.findViewById(R.id.addStockButton);
     }
 
     public LinearLayout getLayout() {

@@ -2,7 +2,6 @@ package com.example.stockdroid.app.activity;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,11 +9,20 @@ import android.view.MenuItem;
 
 import com.example.stockdroid.app.R;
 import com.example.stockdroid.app.fragment.AboutFragment;
+import com.example.stockdroid.app.fragment.AddStockFragment;
 import com.example.stockdroid.app.fragment.PortfolioFragment;
 import com.example.stockdroid.app.fragment.StockFragment;
+import com.example.stockdroid.app.listener.PortfolioListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class StockActivity extends Activity {
+public class StockActivity extends Activity implements PortfolioListener {
+
+    public static final String SHARED_PREFERENCES_NAME =
+            "stock_activity_shared_preferences";
+    private final ArrayList<String> portfolioStocks = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +50,17 @@ public class StockActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case R.id.action_portfolio:
-                performFragmentTransaction(new PortfolioFragment());
+                Bundle bundle = new Bundle();
+                bundle.putStringArrayList("stocks", portfolioStocks);
+                PortfolioFragment fragment = new PortfolioFragment();
+                fragment.setArguments(bundle);
+                performFragmentTransaction(fragment);
                 break;
             case R.id.action_about:
                 performFragmentTransaction(new AboutFragment());
+                break;
+            case R.id.action_addStock:
+                performFragmentTransaction(new AddStockFragment());
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -61,5 +76,16 @@ public class StockActivity extends Activity {
         transaction.replace(R.id.container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    public List<String> getPortfolioStocks() {
+        return portfolioStocks;
+    }
+
+    @Override
+    public void onStockAdded(String symbol) {
+        if (!portfolioStocks.contains(symbol)) {
+            portfolioStocks.add(symbol);
+        }
     }
 }

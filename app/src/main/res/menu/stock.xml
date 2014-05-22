@@ -4,10 +4,14 @@
     tools:context="com.example.stockdroid.app.activity.StockActivity" >
     <item android:id="@+id/action_portfolio"
         android:title="Portfolio"
-        android:orderInCategory="100"
+        android:orderInCategory="1"
         app:showAsAction="never" />
     <item android:id="@+id/action_about"
         android:title="@string/action_about"
-        android:orderInCategory="100"
+        android:orderInCategory="3"
+        app:showAsAction="never" />
+    <item android:id="@+id/action_addStock"
+        android:title="Add Stock"
+        android:orderInCategory="2"
         app:showAsAction="never" />
 </menu>

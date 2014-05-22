@@ -18,5 +18,9 @@
     <string name="parseExceptionMsg">A parsing exception occurred.</string>
     <string name="numberFormatExceptionMsg">A number formatting exception occurred.</string>
     <string name="csvheader">Date,Open,High</string>
+    <string name="addStock">Add Stock</string>
+    <string name="addToPortfolio">Add To Portfolio</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

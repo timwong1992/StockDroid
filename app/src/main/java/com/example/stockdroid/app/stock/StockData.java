@@ -1,8 +1,5 @@
 package com.example.stockdroid.app.stock;
 
-import android.util.Log;
-import android.widget.Toast;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -78,7 +75,7 @@ public class StockData {
     }
 
     public String getDate() {
-        return calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH)+1) + "-" + calendar.get(Calendar.DAY_OF_MONTH);
+        return calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DAY_OF_MONTH);
     }
 
     public double getPrice() {

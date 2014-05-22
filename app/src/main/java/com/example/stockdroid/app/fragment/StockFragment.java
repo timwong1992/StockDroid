@@ -53,25 +53,7 @@ public class StockFragment extends Fragment {
     private View.OnClickListener searchOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Calendar cal = Calendar.getInstance();
-            Calendar cal2 = Calendar.getInstance();
-            cal.add(Calendar.WEEK_OF_YEAR, -1);
-            cal.add(Calendar.DAY_OF_YEAR, -1);
-            cal2.add(Calendar.DAY_OF_YEAR, -1);
-
-            final String symbol = searchWidget.getSearchEditText().getText().toString();
-            if (symbol.equals("") || symbol == null) {
-                Toast.makeText(getActivity().getApplicationContext(), getString(R.string.noSymbolError), 3000).show();
-                return;
-            }
-            // Format: Symbol & Last Trade & Change & Open & Volume & 52 Week Low & 52 Week High (15 min delay)
-            final String stockURI = String.format(getString(R.string.stockURI).replaceAll(" ", "") + "s=%s&f=l1c1ovjkn",
-                    symbol);
-            // Format: Symbol & Start Month & Start Day & Start Year & End Month & End Day & End Year
-            // Months are from 0-11, 0 being January
-            final String chartURI = String.format(getString(R.string.chartURI).replaceAll(" ", "") + "s=%s&a=%d&b=%s&c=%s&d=%d&e=%s&f=%s&n",
-                    symbol, cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.YEAR), cal2.get(Calendar.MONTH), cal2.get(Calendar.DAY_OF_MONTH), cal2.get(Calendar.YEAR));
-            new QueryTask(StockFragment.this, symbol, stockURI, chartURI, new MainStockListener()).execute();
+            query(searchWidget.getSearchEditText().getText().toString());
         }
     };
 
@@ -145,6 +127,32 @@ public class StockFragment extends Fragment {
         searchWidget.getLayout().getLocationOnScreen(position);
 
         searchWidget.getLayout().animate().x(position[0]).y(optionBarHeight).setDuration(500);
+    }
+
+    /**
+     * Starts a QueryTask for a specified symbol.
+     *
+     * @param symbol the symbol of the company to retrieve data about
+     */
+    public void query(String symbol) {
+        Calendar cal = Calendar.getInstance();
+        Calendar cal2 = Calendar.getInstance();
+        cal.add(Calendar.WEEK_OF_YEAR, -1);
+        cal.add(Calendar.DAY_OF_YEAR, -1);
+        cal2.add(Calendar.DAY_OF_YEAR, -1);
+
+        if (symbol.equals("") || symbol == null) {
+            Toast.makeText(getActivity().getApplicationContext(), getString(R.string.noSymbolError), 3000).show();
+            return;
+        }
+        // Format: Symbol & Last Trade & Change & Open & Volume & 52 Week Low & 52 Week High (15 min delay)
+        final String stockURI = String.format(getString(R.string.stockURI).replaceAll(" ", "") + "s=%s&f=l1c1ovjkn",
+                symbol);
+        // Format: Symbol & Start Month & Start Day & Start Year & End Month & End Day & End Year
+        // Months are from 0-11, 0 being January
+        final String chartURI = String.format(getString(R.string.chartURI).replaceAll(" ", "") + "s=%s&a=%d&b=%s&c=%s&d=%d&e=%s&f=%s&n",
+                symbol, cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.YEAR), cal2.get(Calendar.MONTH), cal2.get(Calendar.DAY_OF_MONTH), cal2.get(Calendar.YEAR));
+        new QueryTask(StockFragment.this, symbol, stockURI, chartURI, new MainStockListener()).execute();
     }
 
     /**

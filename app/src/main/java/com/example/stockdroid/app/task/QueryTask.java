@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  * An AsyncTask that retrieves all the stock data from Yahoo Finance API.
- *
+ * <p/>
  * Created by tim on 5/16/14.
  */
 public class QueryTask extends AsyncTask<String, Object, String> {
@@ -161,11 +161,11 @@ public class QueryTask extends AsyncTask<String, Object, String> {
             case StockTask:
                 companyName = data[6].replaceAll("\"", "");
                 return new StockData(companyName, symbol, Calendar.getInstance(),
-                            Double.parseDouble(data[0]), Double.parseDouble(data[2]), Double.parseDouble(data[1]),
-                            Double.parseDouble(data[4]), Double.parseDouble(data[5]), Long.parseLong(data[3]));
+                        Double.parseDouble(data[0]), Double.parseDouble(data[2]), Double.parseDouble(data[1]),
+                        Double.parseDouble(data[4]), Double.parseDouble(data[5]), Long.parseLong(data[3]));
             case ChartTask:
                 return new StockData(companyName, symbol, data[0], Double.parseDouble(data[6]),
-                    0, 0, 0, 0, Long.parseLong(data[5]));
+                        0, 0, 0, 0, Long.parseLong(data[5]));
             default:
                 throw new Resources.NotFoundException();
         }
