@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.example.stockdroid.app.R;
 import com.example.stockdroid.app.activity.StockActivity;
+import com.example.stockdroid.app.listener.PortfolioListener;
 
 import java.util.List;
 
@@ -33,8 +34,9 @@ public class PortfolioFragment extends ListFragment {
     private AdapterView.OnItemClickListener itemSelectedListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            StockFragment fragment = (StockFragment) getActivity().getFragmentManager().findFragmentById(R.layout.fragment_stock);
-            fragment.query(((TextView) view).getText().toString());
+            PortfolioListener listener = (PortfolioListener) getActivity();
+            System.out.println(position);
+            listener.onStockSelected(stocks.get(position));
         }
     };
 
@@ -109,6 +111,9 @@ public class PortfolioFragment extends ListFragment {
 
         getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         getListView().setOnItemLongClickListener(itemLongClickListener);
+        getListView().setOnItemClickListener(itemSelectedListener);
+
+
     }
 
 }

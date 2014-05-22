@@ -3,6 +3,8 @@ package com.example.stockdroid.app.activity;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,13 +19,17 @@ import com.example.stockdroid.app.listener.PortfolioListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 public class StockActivity extends Activity implements PortfolioListener {
 
     public static final String SHARED_PREFERENCES_NAME =
             "stock_activity_shared_preferences";
+    private static final String MAIN_FRAGMENT_TAG = "MainFragment";
+
     private final ArrayList<String> portfolioStocks = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +37,15 @@ public class StockActivity extends Activity implements PortfolioListener {
         setContentView(R.layout.activity_stock);
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new StockFragment())
+                    .add(R.id.container, new StockFragment(), MAIN_FRAGMENT_TAG)
                     .commit();
+        }
+        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);
+        Map<String, ?> map = sharedPreferences.getAll();
+        if (map.size() > 0) {
+            for (String symbol: map.keySet()) {
+                portfolioStocks.add(symbol);
+            }
         }
     }
 
@@ -90,6 +103,20 @@ public class StockActivity extends Activity implements PortfolioListener {
             portfolioStocks.add(symbol);
             Toast.makeText(StockActivity.this, getString(R.string.successfulAdd), 3000);
         }
+        SharedPreferences sharedPreferences =
+                getApplicationContext().getSharedPreferences(
+                        StockActivity.SHARED_PREFERENCES_NAME,
+                        Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
+        preferencesEditor.putString(symbol, symbol);
+        preferencesEditor.apply();
+    }
+
+    @Override
+    public void onStockSelected(String symbol) {
+        getFragmentManager().popBackStack();
+        ((StockFragment)getFragmentManager().findFragmentByTag(MAIN_FRAGMENT_TAG)).query(symbol);
     }
 
 }

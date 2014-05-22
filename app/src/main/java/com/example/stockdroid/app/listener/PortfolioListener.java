@@ -5,4 +5,5 @@ package com.example.stockdroid.app.listener;
  */
 public interface PortfolioListener {
     public void onStockAdded(String symbol);
+    public void onStockSelected(String symbol);
 }
