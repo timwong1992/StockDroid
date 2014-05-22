@@ -46,18 +46,12 @@ public class PortfolioFragment extends ListFragment {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> listView, View view,
                                                int arg2, long arg3) {
-                    // get the given View's Context
-                    final Context context = view.getContext();
 
-                    // get Resources to load Strings from xml
-                    final Resources resources = context.getResources();
-
-                    // get the selected city's name
                     final String symbol =
                             ((TextView) view).getText().toString();
 
                     // create a new AlertDialog
-                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getListView().getContext());
 
                     // set the AlertDialog's message
                     builder.setMessage("Are you sure you want to remove " + symbol + "?");
@@ -69,7 +63,7 @@ public class PortfolioFragment extends ListFragment {
                                 public void onClick(DialogInterface dialog, int id) {
                                     adapter.remove(symbol);
                                     SharedPreferences sharedPreferences =
-                                            context.getSharedPreferences(
+                                            getActivity().getApplicationContext().getSharedPreferences(
                                                     StockActivity.SHARED_PREFERENCES_NAME,
                                                     Context.MODE_PRIVATE);
 
@@ -110,7 +104,7 @@ public class PortfolioFragment extends ListFragment {
         System.out.println(stocks.size());
 
         // set the Fragment's ListView adapter
-        adapter = new ArrayAdapter<>(getActivity().getApplicationContext(), R.layout.stock_item);
+        adapter = new ArrayAdapter<>(getActivity().getApplicationContext(), R.layout.stock_item, stocks);
         setListAdapter(adapter);
 
         getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);

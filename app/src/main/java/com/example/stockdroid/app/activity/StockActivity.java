@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.stockdroid.app.R;
 import com.example.stockdroid.app.fragment.AboutFragment;
@@ -84,8 +85,11 @@ public class StockActivity extends Activity implements PortfolioListener {
 
     @Override
     public void onStockAdded(String symbol) {
+        getFragmentManager().popBackStack();
         if (!portfolioStocks.contains(symbol)) {
             portfolioStocks.add(symbol);
+            Toast.makeText(StockActivity.this, getString(R.string.successfulAdd), 3000);
         }
     }
+
 }
